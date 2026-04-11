@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Brand Manager Dashboard</title>
+<style>
+  :root {
+    --ocean-bg: #f0f7f9;
+    --ocean-surface: #e8f4f7;
+    --ocean-card: #ffffff;
+    --ocean-deep: #1a5f7a;
+    --ocean-mid: #2e8fa8;
+    --ocean-light: #7ec8d8;
+    --ocean-mist: #b8dde6;
+    --ocean-foam: #dff0f4;
+    --ocean-sand: #f5f0e8;
+    --ocean-text: #1e3d4a;
+    --ocean-text-muted: #5a8a96;
+    --ocean-text-soft: #8ab5bf;
+    --ocean-border: rgba(46,143,168,0.15);
+    --ocean-border-mid: rgba(46,143,168,0.25);
+    --r-md: 10px;
+    --r-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    background: var(--ocean-bg);
+    color: var(--ocean-text);
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+  }
+  .dash { max-width: 920px; margin: 0 auto; }
+  .greeting { font-size: 12px; color: var(--ocean-text-soft); margin-bottom: 4px; letter-spacing: .02em; }
+  .title { font-size: 24px; font-weight: 500; color: var(--ocean-deep); margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: var(--ocean-text-muted); margin-bottom: 2rem; }
+
+  .section-divider {
+    font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ocean-text-soft); border-bottom: 1px solid var(--ocean-border);
+    padding-bottom: 7px; margin: 2rem 0 1rem;
+  }
+  .grid2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; margin-bottom: 12px; }
+
+  .card {
+    background: var(--ocean-card);
+    border: 1px solid var(--ocean-border);
+    border-radius: var(--r-lg);
+    padding: 1.1rem 1.3rem;
+  }
+  .sec-label {
+    font-size: 10px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--ocean-text-soft); margin-bottom: 14px;
+  }
+
+  .row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--ocean-border);
+  }
+  .row:last-child { border-bottom: none; }
+
+  .cb {
+    width: 16px; height: 16px; border-radius: 5px;
+    border: 1px solid var(--ocean-mist); cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all .15s;
+  }
+  .cb.done { background: var(--ocean-light); border-color: var(--ocean-light); }
+  .cb.done::after {
+    content: ''; display: block; width: 5px; height: 8px;
+    border: 1.5px solid #fff; border-top: none; border-left: none;
+    transform: rotate(45deg) translateY(-1px);
+  }
+  .task-text { font-size: 13px; color: var(--ocean-text); flex: 1; line-height: 1.4; }
+  .task-text.done { color: var(--ocean-text-soft); text-decoration: line-through; }
+
+  .tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-weight: 500; white-space: nowrap;
+  }
+  .tag-urgent   { background: #fce8e8; color: #8b3a3a; }
+  .tag-meeting  { background: var(--ocean-foam); color: var(--ocean-deep); }
+  .tag-ops      { background: var(--ocean-surface); color: var(--ocean-text-muted); }
+  .tag-project  { background: #edf5e8; color: #3a6a2a; }
+  .tag-other    { background: var(--ocean-surface); color: var(--ocean-text-muted); }
+  .tag-active   { background: #edf5e8; color: #2e6020; }
+  .tag-building { background: #fef5e0; color: #7a5a10; }
+  .tag-stable   { background: var(--ocean-foam); color: var(--ocean-deep); }
+  .tag-planning { background: var(--ocean-surface); color: var(--ocean-text-muted); }
+  .tag-wait     { background: var(--ocean-surface); color: var(--ocean-text-soft); }
+  .tag-doing    { background: #fef5e0; color: #7a5a10; }
+
+  .add-row { display: flex; gap: 8px; margin-top: 12px; }
+  .add-row input {
+    flex: 1; background: var(--ocean-surface); border: 1px solid var(--ocean-border);
+    border-radius: var(--r-md); padding: 7px 11px; font-size: 12px;
+    color: var(--ocean-text); outline: none; transition: border .15s;
+  }
+  .add-row input:focus { border-color: var(--ocean-light); }
+  .add-row input::placeholder { color: var(--ocean-text-soft); }
+  .add-btn {
+    background: var(--ocean-foam); border: 1px solid var(--ocean-mist);
+    border-radius: var(--r-md); padding: 7px 13px; font-size: 12px;
+    color: var(--ocean-deep); cursor: pointer; transition: background .15s; white-space: nowrap;
+  }
+  .add-btn:hover { background: var(--ocean-mist); }
+
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500; flex-shrink: 0;
+  }
+  .av-1 { background: var(--ocean-foam); color: var(--ocean-deep); }
+  .av-2 { background: #e8f0e8; color: #2e5a2e; }
+  .av-3 { background: #f0ece8; color: #6a4a2e; }
+  .av-4 { background: #ece8f5; color: #4a3a7a; }
+  .av-5 { background: #f5ece8; color: #7a3a2e; }
+
+  .txt-main { font-size: 13px; color: var(--ocean-text); flex: 1; min-width: 0; }
+  .txt-sub { font-size: 11px; color: var(--ocean-text-soft); margin-top: 1px; }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .bar-wrap { width: 52px; height: 3px; background: var(--ocean-surface); border-radius: 2px; flex-shrink: 0; }
+  .bar-fill { height: 100%; border-radius: 2px; background: var(--ocean-mid); }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 14px; }
+  .metric {
+    background: var(--ocean-surface); border-radius: var(--r-md);
+    padding: 11px 13px;
+  }
+  .metric-label { font-size: 11px; color: var(--ocean-text-soft); margin-bottom: 5px; }
+  .metric-val {
+    font-size: 19px; font-weight: 500; color: var(--ocean-deep);
+    background: transparent; border: none;
+    border-bottom: 1px solid var(--ocean-border-mid);
+    width: 100%; outline: none; padding: 0;
+  }
+  .metric-sub { font-size: 11px; color: var(--ocean-text-soft); margin-top: 3px; }
+
+  .kpi-pills { display: flex; gap: 7px; flex-wrap: wrap; }
+  .kpi-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    border: 1px solid var(--ocean-border-mid); color: var(--ocean-text-muted);
+    background: var(--ocean-foam);
+  }
+
+  .comm-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--ocean-surface); border: 1px solid var(--ocean-border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="dash">
+
+  <p class="greeting" id="dateStr"></p>
+  <p class="title">Dashboard</p>
+  <p class="subtitle">Brand Manager · Events & Workshops</p>
+
+  <div class="section-divider">Hàng ngày</div>
+
+  <div class="grid2">
+    <div class="card">
+      <p class="sec-label">Công việc hôm nay</p>
+      <div id="taskList"></div>
+      <div class="add-row">
+        <input id="taskInput" placeholder="Thêm việc mới..." onkeydown="if(event.key==='Enter')addTask()"/>
+        <button class="add-btn" onclick="addTask()">+ Thêm</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="sec-label">Khách hàng đang follow</p>
+      <div id="clientList"></div>
+      <div class="add-row">
+        <input id="clientInput" placeholder="Tên khách hàng..." onkeydown="if(event.key==='Enter')addClient()"/>
+        <button class="add-btn" onclick="addClient()">+ Thêm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">Chiến lược thương hiệu</div>
+
+  <div class="card" style="margin-bottom:12px">
+    <p class="sec-label">Mục tiêu & KPI</p>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-label">Doanh số mục tiêu</div>
+        <input class="metric-val" value="500M" title="Nhấn để chỉnh"/>
+        <div class="metric-sub">VNĐ / tháng</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Leads mới</div>
+        <input class="metric-val" value="20"/>
+        <div class="metric-sub">khách hàng / tháng</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Brand awareness</div>
+        <input class="metric-val" value="65%"/>
+        <div class="metric-sub">target Q2</div>
+      </div>
+    </div>
+    <div class="kpi-pills">
+      <span class="kpi-pill">Conversion 15%</span>
+      <span class="kpi-pill">NPS ≥ 8</span>
+      <span class="kpi-pill">Repeat client 40%</span>
+      <span class="kpi-pill">Avg deal 80M</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <p class="sec-label">Kênh marketing</p>
+      <div class="row">
+        <div class="dot" style="background:#2e8fa8"></div>
+        <div class="txt-main">LinkedIn<div class="txt-sub">Content + outreach B2B</div></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:80%;background:#2e8fa8"></div></div>
+        <span class="tag tag-active">Chủ lực</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#5aaa6a"></div>
+        <div class="txt-main">Website / SEO<div class="txt-sub">Inbound & portfolio</div></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:45%;background:#5aaa6a"></div></div>
+        <span class="tag tag-building">Đang xây</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#7ec8d8"></div>
+        <div class="txt-main">Email marketing<div class="txt-sub">Nurture & newsletter</div></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:60%;background:#7ec8d8"></div></div>
+        <span class="tag tag-stable">Ổn định</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#b8a87a"></div>
+        <div class="txt-main">Referral / WOM<div class="txt-sub">Từ khách hàng cũ</div></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:70%;background:#b8a87a"></div></div>
+        <span class="tag tag-active">Chủ lực</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="sec-label">Chiến dịch đang chạy</p>
+      <div class="row">
+        <div class="dot" style="background:#2e8fa8"></div>
+        <div class="txt-main">Brand positioning deck<div class="txt-sub">Messaging & visual identity</div></div>
+        <span class="tag tag-doing">Đang làm</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#5aaa6a"></div>
+        <div class="txt-main">Case study series<div class="txt-sub">3 dự án → LinkedIn + web</div></div>
+        <span class="tag tag-doing">Đang làm</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#7ec8d8"></div>
+        <div class="txt-main">Q2 outreach campaign<div class="txt-sub">BFSI + Tech · 50 leads</div></div>
+        <span class="tag tag-planning">Lên kế hoạch</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#b8a87a"></div>
+        <div class="txt-main">Thought leadership<div class="txt-sub">4 bài/tháng · LinkedIn</div></div>
+        <span class="tag tag-active">Đang chạy</span>
+      </div>
+      <div class="row">
+        <div class="dot" style="background:#c8c0b8"></div>
+        <div class="txt-main">Testimonial video<div class="txt-sub">Quay 2 khách hàng lớn</div></div>
+        <span class="tag tag-wait">Chờ lịch</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider" style="margin-top:1.5rem">Xây dựng cộng đồng</div>
+
+  <div class="card">
+    <p class="sec-label">Kế hoạch & hoạt động</p>
+    <div class="row">
+      <div class="comm-icon">
+        <svg width="11" height="11" viewBox="0 0 16 16" stroke="#5a8a96" fill="none" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-3 2.2-5 5-5s5 2 5 5"/><circle cx="12" cy="5" r="2"/><path d="M12 10c1.7.2 3 1.5 3 3"/></svg>
+      </div>
+      <div class="txt-main">LinkedIn content series: "Event Insights"<div class="txt-sub">Hàng tuần · Thứ 3</div></div>
+      <span class="tag tag-active">Đang chạy</span>
+    </div>
+    <div class="row">
+      <div class="comm-icon">
+        <svg width="11" height="11" viewBox="0 0 16 16" stroke="#5a8a96" fill="none" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 4l7 5 7-5"/></svg>
+      </div>
+      <div class="txt-main">Host breakfast talk cho brand manager<div class="txt-sub">Tháng 5 · 2025</div></div>
+      <span class="tag tag-building">Lên kế hoạch</span>
+    </div>
+    <div class="row">
+      <div class="comm-icon">
+        <svg width="11" height="11" viewBox="0 0 16 16" stroke="#5a8a96" fill="none" stroke-width="1.5"><path d="M2 4h12v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/><path d="M2 4l6 5 6-5"/></svg>
+      </div>
+      <div class="txt-main">Newsletter cho khách hàng cũ<div class="txt-sub">Hàng tháng</div></div>
+      <span class="tag tag-stable">Ổn định</span>
+    </div>
+    <div class="row">
+      <div class="comm-icon">
+        <svg width="11" height="11" viewBox="0 0 16 16" stroke="#5a8a96" fill="none" stroke-width="1.5"><polygon points="8,1 10,6 15,6 11,9.5 12.5,15 8,11.5 3.5,15 5,9.5 1,6 6,6"/></svg>
+      </div>
+      <div class="txt-main">Referral program cho đối tác<div class="txt-sub">Đang thiết kế</div></div>
+      <span class="tag tag-wait">Chờ</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const today = new Date();
+document.getElementById('dateStr').textContent = today.toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+const S = (k,v) => { if(v!==undefined) localStorage.setItem(k,JSON.stringify(v)); else { try{return JSON.parse(localStorage.getItem(k))}catch{return null} }};
+
+let tasks = S('tasks_v2') || [
+  {text:'Gửi proposal cho Vingroup',done:false,tag:'urgent'},
+  {text:'Họp team review Q2 plan',done:false,tag:'meeting'},
+  {text:'Check nhà cung cấp AV',done:true,tag:'ops'},
+  {text:'Update slide deck sự kiện 5/5',done:false,tag:'project'},
+];
+let clients = S('clients_v2') || [
+  {name:'Vingroup',sub:'Workshop lãnh đạo · 120 pax',action:'Chờ phản hồi',av:'av-1'},
+  {name:'FPT Software',sub:'Team building Q2',action:'Demo 15/4',av:'av-2'},
+  {name:'Masan Group',sub:'Annual conference',action:'Negotiating',av:'av-3'},
+  {name:'Techcombank',sub:'Leadership offsite',action:'Signed',av:'av-4'},
+];
+
+const tagMap = {urgent:'tag-urgent',meeting:'tag-meeting',ops:'tag-ops',project:'tag-project',other:'tag-other'};
+const tagLabel = {urgent:'Gấp',meeting:'Họp',ops:'Vận hành',project:'Dự án',other:'Khác'};
+
+function renderTasks(){
+  document.getElementById('taskList').innerHTML = tasks.map((t,i)=>`
+    <div class="row">
+      <div class="cb ${t.done?'done':''}" onclick="toggleTask(${i})"></div>
+      <span class="task-text ${t.done?'done':''}">${t.text}</span>
+      <span class="tag ${tagMap[t.tag]||'tag-other'}">${tagLabel[t.tag]||t.tag}</span>
+    </div>`).join('');
+}
+function toggleTask(i){tasks[i].done=!tasks[i].done;S('tasks_v2',tasks);renderTasks();}
+function addTask(){
+  const inp=document.getElementById('taskInput');
+  const v=inp.value.trim();if(!v)return;
+  tasks.unshift({text:v,done:false,tag:'other'});
+  S('tasks_v2',tasks);inp.value='';renderTasks();
+}
+
+function renderClients(){
+  const avs=['av-1','av-2','av-3','av-4','av-5'];
+  document.getElementById('clientList').innerHTML = clients.map((c,i)=>`
+    <div class="row">
+      <div class="avatar ${c.av||avs[i%5]}">${c.name.substring(0,2).toUpperCase()}</div>
+      <div class="txt-main">${c.name}<div class="txt-sub">${c.sub||''}</div></div>
+      <span class="tag tag-ops">${c.action||''}</span>
+    </div>`).join('');
+}
+function addClient(){
+  const inp=document.getElementById('clientInput');
+  const v=inp.value.trim();if(!v)return;
+  const avs=['av-1','av-2','av-3','av-4','av-5'];
+  clients.unshift({name:v,sub:'Mới thêm',action:'Follow up',av:avs[clients.length%5]});
+  S('clients_v2',clients);inp.value='';renderClients();
+}
+
+renderTasks();renderClients();
+</script>
+</body>
+</html>
